@@ -43,4 +43,5 @@ def login_user(data: OAuth2PasswordRequestForm=Depends()):
     return {"access_token": access_token, "token_type":"bearer"}
 
 @app.get("/users/me")
-def 
+def authorized_user(current_user: UserInDB = Depends(get_current_user)):
+    return current_user
