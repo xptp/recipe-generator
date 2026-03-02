@@ -22,7 +22,7 @@ def create_user(user:UserCreate):
     return {"message":"User created"}
 
 
-@app.post("/login")
+@app.post("/login", response_model=Token)
 def login_user(data: OAuth2PasswordRequestForm=Depends()):
     username = data.username
     password = data.password
