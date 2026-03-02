@@ -38,10 +38,11 @@ def create_access_token(data:dict, expires_delta: timedelta | None = None)-> str
 # шаблон из Fastapi, реализует способ аунтификации по протоколу oauth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
+# находит пользователя в базе если передан действительный токен
 async def get_current_user(token:str = Depends(oauth2_scheme))->UserInDB:
     credentials_exception=HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="cloud not validate credentials",
+        detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"}
     )
     try:
