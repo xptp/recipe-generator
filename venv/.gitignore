@@ -1,0 +1,9 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+#Виртуальное окружение
+venv/
+.env
+
+#Кеш py 
+__pycache__/
+*.pyc
