@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from models import UserCreate, Token, UserInDB
+from models import UserCreate, Token, RecipeCreate
 from auth import hash_password,verify_pass,create_access_token,get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 from sqlmodel import Session,select
 from database import get_session, create_db_tables
-from models import UserDB, RecipeDB
+from models import UserDB, RecipeDB,RecipeOut
 from contextlib import asynccontextmanager
 
 
@@ -20,6 +20,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+# для юзера
 @app.post("/register")
 def create_user(user:UserCreate,session: Session = Depends(get_session)):
 
@@ -65,3 +67,50 @@ def login_user(data: OAuth2PasswordRequestForm=Depends(),session = Depends(get_s
 @app.get("/users/me")
 def authorized_user(current_user: UserDB = Depends(get_current_user)):
     return current_user
+
+# для рецептов
+@app.post("/recipes",response_model=RecipeOut)
+def created_recipes(recipe:RecipeCreate,current_user:UserDB=Depends(get_current_user),session: Session= Depends(get_session)):
+    db_recipe=RecipeDB(
+        title=recipe.title,
+        ingredients=recipe.ingredients,
+        instructions=recipe.instructions,
+        cooking_time=recipe.cooking_time,
+        user_id=current_user.id
+        )
+    
+    session.add(db_recipe)
+    session.commit()
+    session.refresh(db_recipe)
+    return db_recipe
+
+@app.get("/recipes")
+def get_recipes(current_user:UserDB=Depends(get_current_user),session: Session= Depends(get_session)):
+    return session.exec(select(RecipeDB).where(RecipeDB.user_id==current_user.id)).all()
+
+@app.get("/recipes/{recipe_id}")
+def get_one_recipe(
+                    recipe_id:int,
+                    current_user:UserDB=Depends(get_current_user),
+                    session: Session= Depends(get_session)
+                    ):
+    recipe=session.get(RecipeDB, recipe_id)
+
+    if not recipe or recipe.user_id != current_user.id:
+        raise HTTPException(status_code=404,detail="recipe not found")
+    
+    return recipe
+
+@app.delete("/recipes/{recipe_id}",status_code=204)
+def delete_recipe(
+                    recipe_id:int,
+                    current_user:UserDB=Depends(get_current_user),
+                    session: Session= Depends(get_session)
+                    ):
+    recipe=session.get(RecipeDB, recipe_id)
+
+    if not recipe or recipe.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="recipe not found")
+    
+    session.delete(recipe)
+    session.commit()
