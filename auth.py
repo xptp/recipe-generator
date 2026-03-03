@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from models import UserInDB
-from database import users_db
+# from database import users_db
 from sqlmodel import Session,select
 from database import get_session
 from models import UserDB
@@ -42,7 +42,7 @@ def create_access_token(data:dict, expires_delta: timedelta | None = None)-> str
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
 # находит пользователя в базе если передан действительный токен
-async def get_current_user(token:str = Depends(oauth2_scheme),session:Session= Depends(get_session))->UserInDB:
+async def get_current_user(token:str = Depends(oauth2_scheme),session:Session= Depends(get_session))->UserDB:
     credentials_exception=HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

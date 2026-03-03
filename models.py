@@ -8,7 +8,7 @@ class UserDB(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None,primary_key=True) # первичный ключ
     username: str = Field(unique=True, index=True)
-    hased_password: str
+    hashed_password: str
     recipes: List["RecipeDB"]=Relationship(back_populates='user')
 
 class RecipeDB(SQLModel,table=True):
