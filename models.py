@@ -49,3 +49,7 @@ class RecipeOut(BaseModel):
     cooking_time: Optional[int]
     created_at: datetime
     user_id: int
+
+class GenerateRequest(BaseModel):
+     ingredients: str
+    

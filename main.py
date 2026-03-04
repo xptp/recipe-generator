@@ -1,13 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from models import UserCreate, Token, RecipeCreate
+from models import UserCreate, Token, RecipeCreate, UserDB, RecipeDB, RecipeOut,GenerateRequest
 from auth import hash_password,verify_pass,create_access_token,get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 from sqlmodel import Session,select
 from database import get_session, create_db_tables
-from models import UserDB, RecipeDB,RecipeOut
 from contextlib import asynccontextmanager
-
+from ai import generate_recipe
 
 #запуск
 @asynccontextmanager
@@ -114,3 +113,8 @@ def delete_recipe(
     
     session.delete(recipe)
     session.commit()
+
+@app.post("/recipe-generator",response_model=RecipeCreate)
+def recipe_generator(data: GenerateRequest):
+    result = generate_recipe(data.ingredients)
+    return result
