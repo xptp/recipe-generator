@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from models import UserCreate, Token, RecipeCreate, UserDB, RecipeDB, RecipeOut,GenerateRequest
-from auth import hash_password,verify_pass,create_access_token,get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
+from models import RefreshRequest,LoginResponse,UserCreate, Token, RecipeCreate, UserDB, RecipeDB, RecipeOut,GenerateRequest,RefreshTokenDB
+from auth import verify_refresh,create_refresh_token,hash_password,verify_pass,create_access_token,get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES
 from sqlmodel import Session,select
 from database import get_session, create_db_tables
 from contextlib import asynccontextmanager
@@ -42,7 +42,7 @@ def create_user(user:UserCreate,session: Session = Depends(get_session)):
     return {"message":"User created"}
 
 
-@app.post("/login", response_model=Token)
+@app.post("/login", response_model=LoginResponse)
 def login_user(data: OAuth2PasswordRequestForm=Depends(),session = Depends(get_session)):
     username = data.username
     password = data.password
@@ -54,14 +54,34 @@ def login_user(data: OAuth2PasswordRequestForm=Depends(),session = Depends(get_s
         )
     
     user_In_Data_Base =session.exec(select(UserDB).where(UserDB.username == data.username)).first()
+    
     if user_In_Data_Base is None:
         raise error_user
     if not verify_pass(password, user_In_Data_Base.hashed_password ):
         raise error_user
-    
+    refresh_token= create_refresh_token(session,user_In_Data_Base.id)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token({"sub":username},access_token_expires)
-    return {"access_token": access_token, "token_type":"bearer"}
+    return {"access_token": access_token,"refresh_token":refresh_token, "token_type":"bearer"}
+
+# получение acess по refresh
+@app.post('/refresh',response_model=Token)
+def refresh_access_token(request:RefreshRequest,session:Session=Depends(get_session)):
+    user =  verify_refresh(session, request.refresh_token)
+    user_In_Data_Base =session.exec(select(UserDB).where(UserDB.id== user.user_id)).first()
+
+    if user_In_Data_Base is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="error refresh token",
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token({"sub":user_In_Data_Base.username},access_token_expires)
+    return {"access_token": access_token,"token_type":"bearer"}
+    
+    
+
 
 @app.get("/users/me")
 def authorized_user(current_user: UserDB = Depends(get_current_user)):

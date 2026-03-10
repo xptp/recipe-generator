@@ -37,6 +37,25 @@ class Token(BaseModel):
     access_token:str
     token_type: str = "bearer"
 
+class RefreshTokenDB(SQLModel,table=True):
+    __tablename__ = "refresh_tokens"
+
+    id:int
+    token: str 
+    user_id:int
+    exires_at: datetime
+    revoked: bool
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+
+
+class LoginResponse(BaseModel):
+    access_token:str
+    refresh_token:str
+    token_type:str = "bearer"
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 class RecipeCreate(BaseModel):
     title:str
     ingredients: str

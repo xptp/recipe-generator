@@ -1,15 +1,15 @@
 import os
+import secrets
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from models import UserInDB
 # from database import users_db
 from sqlmodel import Session,select
 from database import get_session
-from models import UserDB
+from models import UserDB,RefreshTokenDB
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -37,7 +37,29 @@ def create_access_token(data:dict, expires_delta: timedelta | None = None)-> str
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# Создание рефреш токена
+def create_refresh_token(session:Session, user_id:int)->str:
+    refresh=secrets.token_urlsafe(32)
+    expires=datetime.now(timezone.utc) + timedelta(days=7)
+    db_token=RefreshTokenDB(token=refresh,user_id=user_id,expires_at=expires, revoked=False)
 
+    session.add(db_token)
+    session.commit()
+    session.refresh(db_token)
+    return db_token
+
+def verify_refresh(session:Session,refresh)->RefreshTokenDB:
+    token= session.exec(select(RefreshTokenDB).where((RefreshTokenDB.token==refresh) & (RefreshTokenDB.revoked==False) & (RefreshTokenDB.expires_at > datetime.now(timezone.utc)))).first()
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Error refresh token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    else:
+        return token
+    
+    
 # шаблон из фастапи, реализует способ аунтификации по протоколу oauth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
