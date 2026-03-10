@@ -21,7 +21,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 # для юзера
-@app.post("/register")
+@app.post("/register",response_model=LoginResponse)
 def create_user(user:UserCreate,session: Session = Depends(get_session)):
 
     existing_user=session.exec(select(UserDB).where(UserDB.username==user.username)).first()
@@ -39,7 +39,11 @@ def create_user(user:UserCreate,session: Session = Depends(get_session)):
     session.commit()
     session.refresh(db_user)
 
-    return {"message":"User created"}
+    createdUserRefreshToken = create_refresh_token(session,db_user.id)
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    createdUserAccessToken = create_access_token({"sub":db_user.username},access_token_expires)
+
+    return {'access_token':createdUserAccessToken,"refresh_token":createdUserRefreshToken,"token_type":"bearer"}
 
 
 @app.post("/login", response_model=LoginResponse)

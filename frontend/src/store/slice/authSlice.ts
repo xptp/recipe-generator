@@ -7,6 +7,7 @@ import axios from "axios";
 interface AuthState {
     user: UserInDB | null;
     token: string | null;
+    refreshToken: string | null;
     loading: boolean;
     error: string | null;
 }
@@ -29,6 +30,7 @@ export const signUp = createAsyncThunk<void, RegisterData, {rejectValue:string}>
 const initialState: AuthState = {
     user: null,
     token: null,
+    refreshToken:null,
     loading: false,
     error:null
 }
@@ -40,6 +42,7 @@ const authSlice = createSlice({
         logout:(state)=>{
             state.user = null;
             state.token = null;
+            state.refreshToken= null;
             state.loading = false;
             state.error = null;
         },

@@ -8,11 +8,12 @@ const authService = {
     register:async({
         username,
         password,
-    }:RegisterData): Promise<void>=>{
-        await http.post('/register',{
+    }:RegisterData): Promise<Token>=>{
+        const responce = await http.post<Token>('/register',{
             username,
             password
         })
+        return responce.data
     },
     login:async({
         username,

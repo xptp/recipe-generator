@@ -10,6 +10,7 @@ export interface RegisterData{
 }
 
 export interface Token{
-    acess_token:string,
+    acсess_token:string,
+    refresh_token:string,
     token_type: string,
 }
