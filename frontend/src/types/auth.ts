@@ -9,8 +9,8 @@ export interface RegisterData{
     password:string
 }
 
-export interface Token{
-    acсess_token:string,
-    refresh_token:string,
-    token_type: string,
+export interface Token {
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
 }

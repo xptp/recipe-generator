@@ -75,26 +75,30 @@ const authSlice = createSlice({
         })
         .addCase(signUp.fulfilled, (state,action)=>{
             state.loading=false;
-            state.token=action.payload.acсess_token;
+            state.token=action.payload.access_token;
             state.refreshToken=action.payload.refresh_token;
         })
-        .addCase(signUp.rejected, (state, action)=>{
-            state.loading=false;
-            state.error= action.payload as string
-        })
+        .addCase(signUp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = typeof action.payload === 'string'
+        ? action.payload
+        : action.payload || 'Ошибка регистрации';
+})
         .addCase(signIn.pending, state=>{
             state.loading=true;
             state.error=null;
         })
         .addCase(signIn.fulfilled, (state,action)=>{
             state.loading=false;
-            state.token=action.payload.acсess_token;
+            state.token=action.payload.access_token;;
             state.refreshToken=action.payload.refresh_token;
         })
         .addCase(signIn.rejected, (state, action)=>{
-            state.loading=false;
-            state.error= action.payload as string
-        })
+        state.loading = false;
+        state.error = typeof action.payload === 'string'
+        ? action.payload
+        : action.payload || 'Ошибка авторизации';
+})
     }
 })
 

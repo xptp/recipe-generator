@@ -40,10 +40,10 @@ class Token(BaseModel):
 class RefreshTokenDB(SQLModel,table=True):
     __tablename__ = "refresh_tokens"
 
-    id:int
+    id: int = Field(primary_key=True) 
     token: str 
     user_id:int
-    exires_at: datetime
+    expires_at: datetime
     revoked: bool
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 

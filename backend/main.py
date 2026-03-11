@@ -7,6 +7,8 @@ from sqlmodel import Session,select
 from database import get_session, create_db_tables
 from contextlib import asynccontextmanager
 from ai import generate_recipe
+from fastapi.middleware.cors import CORSMiddleware
+
 
 #запуск
 @asynccontextmanager
@@ -18,7 +20,14 @@ async def lifespan(app: FastAPI):
     pass
 
 app = FastAPI(lifespan=lifespan)
-
+# корс, убрал ошибку разных протов фронта и бека 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # для юзера
 @app.post("/register",response_model=LoginResponse)
@@ -31,6 +40,7 @@ def create_user(user:UserCreate,session: Session = Depends(get_session)):
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Username already regis",
     )
+    print(f"Password: {user.password}, type: {type(user.password)}")
     hashed = hash_password(user.password)
 
     db_user= UserDB(username=user.username,hashed_password=hashed)

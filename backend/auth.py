@@ -46,7 +46,7 @@ def create_refresh_token(session:Session, user_id:int)->str:
     session.add(db_token)
     session.commit()
     session.refresh(db_token)
-    return db_token
+    return refresh
 
 def verify_refresh(session:Session,refresh)->RefreshTokenDB:
     token= session.exec(select(RefreshTokenDB).where((RefreshTokenDB.token==refresh) & (RefreshTokenDB.revoked==False) & (RefreshTokenDB.expires_at > datetime.now(timezone.utc)))).first()
