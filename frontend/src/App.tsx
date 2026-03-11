@@ -1,11 +1,12 @@
 import './App.css'
+import AuthForm from './components/authForm'
 
 function App() {
 
 
   return (
     <> 
-      <h1>test</h1>
+      <AuthForm />
     </>
   )
 }

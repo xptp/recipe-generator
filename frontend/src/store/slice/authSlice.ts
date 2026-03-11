@@ -102,3 +102,5 @@ export const {
     logout,
     resetError
 }=authSlice.actions
+
+export default authSlice.reducer
