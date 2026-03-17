@@ -20,9 +20,29 @@
 - **passlib[bcrypt]** – хеширование паролей
 - **Transformers (Hugging Face)** – модель `flax-community/t5-recipe-generation`
 
-### Фронтенд
+ ### Фронтенд
 - **React 18+** (создан через Vite)
 - **TypeScript**
 - **Redux Toolkit** – управление состоянием
 - **React Router** – навигация
 - **Axios** – HTTP-клиент (с интерцепторами)
+
+ ### Запуск бек
+  cd backend
+  python -m venv venv
+  # Активация окружения:
+  # Windows (PowerShell):
+  .\venv\Scripts\Activate.ps1
+  # Linux/macOS:
+  source venv/bin/activate
+
+  pip install -r requirements.txt
+  uvicorn main:app --reload
+
+  После этого бэкенд будет доступен по адресу http://127.0.0.1:8000
+  Документация Swagger: http://127.0.0.1:8000/docs
+
+  ### Запуск фронт
+  cd frontend
+  npm install
+  npm run dev
