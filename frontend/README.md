@@ -1,73 +1,28 @@
-# React + TypeScript + Vite
+# Recipe Generator – AI-помощник для создания рецептов
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Это full-stack веб-приложение, которое позволяет пользователям регистрироваться, сохранять свои рецепты и генерировать новые по списку ингредиентов с помощью искусственного интеллекта. Проект построен на **React + TypeScript** на фронтенде и **FastAPI (Python)** на бэкенде. Авторизация реализована с помощью JWT (access + refresh token), данные хранятся в SQLite.
 
-Currently, two official plugins are available:
+## 🚀 Функциональность
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ Регистрация и вход с выдачей пары токенов (access, refresh)
+- ✅ Защищённые маршруты (только для авторизованных)
+- ✅ AI-генерация рецепта по введённым ингредиентам (модель Hugging Face)
+- ✅ Сохранение токена в `localStorage` для сохранения сессии после перезагрузки
 
-## React Compiler
+## 🛠️ Стек технологий
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Бэкенд
+- **Python 3.10+**
+- **FastAPI** – веб-фреймворк
+- **SQLModel** – ORM для работы с базой
+- **SQLite** – база данных
+- **python-jose** – создание и проверка JWT
+- **passlib[bcrypt]** – хеширование паролей
+- **Transformers (Hugging Face)** – модель `flax-community/t5-recipe-generation`
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Фронтенд
+- **React 18+** (создан через Vite)
+- **TypeScript**
+- **Redux Toolkit** – управление состоянием
+- **React Router** – навигация
+- **Axios** – HTTP-клиент (с интерцепторами)
