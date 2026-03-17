@@ -19,30 +19,29 @@ const GeneratorPage: React.FC = () => {
       setRecipe(response.data);
     } catch (error) {
       console.error('Ошибка генерации:', error);
-      alert('Не удалось сгенерировать рецепт');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '32px' }}>
       <h1>Генератор рецептов</h1>
       <form onSubmit={handleSubmit}>
         <textarea
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
-          placeholder="Введите ингредиенты через запятую (например: курица, рис, лук)"
+          placeholder="ингредиенты через запятую (пример: курица, рис, лук)"
           rows={3}
-          style={{ width: '100%', marginBottom: '10px' }}
+          style={{ width: '50%', marginBottom: '10px', resize:'none' }}
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={{ width: '50%', marginBottom: '5px' }}>
           {loading ? 'Генерация...' : 'Сгенерировать'}
         </button>
       </form>
 
       {recipe && (
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: '22px' }}>
           <h2>{recipe.title || 'Рецепт'}</h2>
           <p><strong>Ингредиенты:</strong> {recipe.ingredients}</p>
           <p><strong>Инструкция:</strong> {recipe.instructions}</p>
