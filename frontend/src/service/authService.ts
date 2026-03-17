@@ -1,8 +1,9 @@
-import axios from "axios";
-import config from "./config.json"
+// import axios from "axios";
+// import config from "./config.json"
 import type  {RegisterData, Token} from "../types/auth"
+import http from "../api/axiosConfig"
 
-const http = axios.create({baseURL:config.apiEndpoint})
+// const http = axios.create({baseURL:config.apiEndpoint})
 
 const authService = {
     register:async({
